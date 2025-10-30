@@ -113,17 +113,11 @@ A modern iOS home automation application built with SwiftUI for controlling Vera
    - **Multi-VMS Support**: Blue Iris (fully implemented), Frigate, RTSP, MJPEG, Generic Web View (adapter pattern ready)
    - **Dynamic Camera Management**: Up to 2 cameras with user-defined names
    - **VMS Type Selection**: Choose camera system type in settings
-   - **Master PIN Protection**: All camera settings require Master PIN verification
-   - **Secure Credential Storage**: Camera passwords stored in iOS Keychain
-   - **Auto-credential Embedding**: Seamless login with embedded credentials
+   - **Master PIN Protection**: All settings require Master PIN verification
    - **Real-time Configuration**: IP address, port, username, and password management
    - **Error Handling**: User-friendly error messages with retry options
    - **Pull-to-refresh**: Manual refresh capability for camera feeds
-   - **Full CRUD Operations**: Add, edit, delete camera configurations
-   - **Adapter Pattern**: Clean separation between generic interfaces and VMS-specific implementations
-   - **Deprecated Methods**: Legacy "Iris One"/"Iris Two" naming replaced with user-defined names
-   
-   *📝 Camera features section updated: January 2025 - Multi-VMS support with adapter pattern architecture*
+   - **Adapter Pattern**: Clean separation between generic interfaces and VMS-specific implementations  
 
 ## 🏗️ Architecture
 
