@@ -117,6 +117,63 @@ class KeychainService: @unchecked Sendable {
 }
 ```
 
+### Settings Backup Service
+
+Comprehensive backup and restore service for app settings:
+
+- **Location**: `Core/Services/Storage/SettingsBackupService.swift`
+- **Purpose**: Export and import all app settings to/from JSON files
+- **Benefits**: Allows settings to persist across app deletions and reinstallations
+
+**Features:**
+- Exports all settings: hub configs, camera settings, PINs, scenes, devices, destinations
+- Imports and restores complete configuration
+- Handles PIN restoration (hashed PINs work with same original PINs)
+- File-based backup that can be saved to Files app, AirDrop, email, etc.
+
+**Usage:**
+```swift
+@MainActor
+class SettingsBackupService: ObservableObject {
+    @Published var isExporting = false
+    @Published var isImporting = false
+    
+    func exportAllSettings(
+        hubConfigStore: HubConfigurationStore,
+        cameraConfigService: CameraConfigService,
+        pinService: PINManagementService,
+        appConfig: AppConfiguration,
+        destinationStore: DestinationStore
+    ) async throws -> URL
+    
+    func importSettings(
+        from url: URL,
+        hubConfigStore: HubConfigurationStore,
+        cameraConfigService: CameraConfigService,
+        pinService: PINManagementService,
+        appConfig: AppConfiguration,
+        destinationStore: DestinationStore
+    ) async throws
+}
+```
+
+**Backup Data Structure:**
+```swift
+struct SettingsBackup: Codable {
+    let version: String
+    let exportDate: Date
+    let hubConfigurations: [HubConfiguration]
+    let cameraConfigurations: [CameraConfig]
+    let cameraPasswords: [String: String]
+    let masterPINData: MasterPINData?
+    let userPINs: [PINData]
+    let sceneMappings: [String: [String: String]]
+    let selectedDeviceNames: [String]
+    let primaryHubId: String?
+    let favoriteDestinations: [FavoriteDestination]
+}
+```
+
 ## 📊 Data Models
 
 ### AppConfiguration

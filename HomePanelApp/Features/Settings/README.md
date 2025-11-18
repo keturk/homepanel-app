@@ -84,7 +84,7 @@ enum SettingsMenuItem: String, CaseIterable {
 Modern resizable split-pane interface with organized menu system:
 
 - **Resizable Divider**: Draggable divider with UserDefaults persistence
-- **Menu Navigation**: 6 organized menu items with icons and descriptions
+- **Menu Navigation**: 7 organized menu items with icons and descriptions
 - **Save/Discard Pattern**: Coordinated state management across all settings
 - **Toast Notifications**: User feedback for all operations
 
@@ -126,13 +126,56 @@ Advanced alarm user security system administration:
 - **PIN Security**: Secure PIN storage and validation
 - **Lockout Management**: Reset lockout states and manage security
 
+### Backup & Restore
+
+Comprehensive settings backup and restore functionality:
+
+- **Export Settings**: Export all app settings to a JSON file
+- **Import Settings**: Restore all settings from a backup file
+- **Complete Backup**: Includes hub configs, camera settings, PINs, scenes, devices, and destinations
+- **File Sharing**: Export via Files app, AirDrop, email, or other sharing methods
+- **Secure Import**: File picker with confirmation dialog before importing
+- **Data Persistence**: Allows settings to survive app deletion and reinstallation
+
+**Backup Includes:**
+- Hub configurations (all hubs with connection details)
+- Camera configurations (IP, port, credentials, VMS type)
+- Camera passwords (securely stored)
+- Master PIN and user PINs (hashed, so same PINs work after restore)
+- Scene mappings (hub-scoped scene name to ID mappings)
+- Selected device names (ordered list)
+- Primary hub ID
+- Favorite destinations (location data)
+
+**Usage:**
+```swift
+// Export settings
+let backupURL = try await backupService.exportAllSettings(
+    hubConfigStore: hubConfigStore,
+    cameraConfigService: cameraConfigService,
+    pinService: pinService,
+    appConfig: appConfig,
+    destinationStore: destinationStore
+)
+
+// Import settings
+try await backupService.importSettings(
+    from: backupURL,
+    hubConfigStore: hubConfigStore,
+    cameraConfigService: cameraConfigService,
+    pinService: pinService,
+    appConfig: appConfig,
+    destinationStore: destinationStore
+)
+```
+
 ### Administrative Functions
 
 System administration and maintenance:
 
 - **Lockout Reset**: Clear all PIN attempt counters and lockout timers
 - **Settings Reset**: Complete settings reset with Master PIN restoration
-- **Data Export**: Configuration backup and restore capabilities
+- **Backup & Restore**: Export and import all settings via JSON files (see Backup & Restore section above)
 
 ## 🎨 User Interface
 
