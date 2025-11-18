@@ -23,6 +23,10 @@
 		E11545B32EA0B54100BA8578 /* CameraServiceCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11545B22EA0B54100BA8578 /* CameraServiceCoordinator.swift */; };
 		E11545B72EA0B6D600BA8578 /* BlueIrisCameraAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11545B42EA0B6D600BA8578 /* BlueIrisCameraAdapter.swift */; };
 		E11A51652E9E08C400E39AEC /* HubRowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E11A51642E9E08C400E39AEC /* HubRowView.swift */; };
+		E13149B82ECC0DA400176FD9 /* SettingsBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13149B72ECC0DA400176FD9 /* SettingsBackupService.swift */; };
+		E13149B92ECC0DA400176FD9 /* SettingsBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13149B72ECC0DA400176FD9 /* SettingsBackupService.swift */; };
+		E13149BB2ECC0DD400176FD9 /* BackupRestoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13149BA2ECC0DD400176FD9 /* BackupRestoreView.swift */; };
+		E13149BC2ECC0DD400176FD9 /* BackupRestoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13149BA2ECC0DD400176FD9 /* BackupRestoreView.swift */; };
 		E13445522EA9591800FF7138 /* README.md in Resources */ = {isa = PBXBuildFile; fileRef = E134454F2EA9591800FF7138 /* README.md */; };
 		E13445532EA9591800FF7138 /* TimeoutConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = E13445502EA9591800FF7138 /* TimeoutConfiguration.swift */; };
 		E171314C2EA35A0400EC87BE /* AsyncUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = E171314B2EA35A0400EC87BE /* AsyncUtilities.swift */; };
@@ -147,6 +151,8 @@
 		E11545B22EA0B54100BA8578 /* CameraServiceCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CameraServiceCoordinator.swift; sourceTree = "<group>"; };
 		E11545B42EA0B6D600BA8578 /* BlueIrisCameraAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlueIrisCameraAdapter.swift; sourceTree = "<group>"; };
 		E11A51642E9E08C400E39AEC /* HubRowView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HubRowView.swift; sourceTree = "<group>"; };
+		E13149B72ECC0DA400176FD9 /* SettingsBackupService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsBackupService.swift; sourceTree = "<group>"; };
+		E13149BA2ECC0DD400176FD9 /* BackupRestoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupRestoreView.swift; sourceTree = "<group>"; };
 		E134454F2EA9591800FF7138 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		E13445502EA9591800FF7138 /* TimeoutConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimeoutConfiguration.swift; sourceTree = "<group>"; };
 		E171314B2EA35A0400EC87BE /* AsyncUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AsyncUtilities.swift; sourceTree = "<group>"; };
@@ -373,6 +379,7 @@
 		E18B65EA2E9D754D0009E0BF /* Storage */ = {
 			isa = PBXGroup;
 			children = (
+				E13149B72ECC0DA400176FD9 /* SettingsBackupService.swift */,
 				E18B65E92E9D754D0009E0BF /* KeychainService.swift */,
 			);
 			path = Storage;
@@ -628,6 +635,7 @@
 		E18B663C2E9D75700009E0BF /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				E13149BA2ECC0DD400176FD9 /* BackupRestoreView.swift */,
 				E19349EE2EB2973500525810 /* DestinationManagement */,
 				E10AC7E72EA15FF800350F36 /* CameraManagement */,
 				D3V1CE5E1EC710000000001 /* DeviceSelection */,
@@ -946,6 +954,7 @@
 				E18B66882E9D79880009E0BF /* HubServiceCoordinator.swift in Sources */,
 				E18B668A2E9D79880009E0BF /* Views in Sources */,
 				E11545A52EA0789F00BA8578 /* SceneServiceProtocol.swift in Sources */,
+				E13149B82ECC0DA400176FD9 /* SettingsBackupService.swift in Sources */,
 				E19349E62EB2970B00525810 /* TrafficService.swift in Sources */,
 				E19349EF2EB2973500525810 /* AddDestinationView.swift in Sources */,
 				E19349F02EB2973500525810 /* EditDestinationView.swift in Sources */,
@@ -995,6 +1004,7 @@
 				E171314C2EA35A0400EC87BE /* AsyncUtilities.swift in Sources */,
 				E18B666E2E9D79680009E0BF /* CameraViewModel.swift in Sources */,
 				E18B666F2E9D79680009E0BF /* CameraConfigService.swift in Sources */,
+				E13149BC2ECC0DD400176FD9 /* BackupRestoreView.swift in Sources */,
 				E18B66702E9D79680009E0BF /* CameraSettingsView.swift in Sources */,
 				E18B665B2E9D793F0009E0BF /* AlarmLockoutService.swift in Sources */,
 				E18B665C2E9D793F0009E0BF /* LockoutManager.swift in Sources */,
@@ -1010,12 +1020,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E13149BB2ECC0DD400176FD9 /* BackupRestoreView.swift in Sources */,
 				E1934A112EB2C06100525810 /* LockoutManagerTests.swift in Sources */,
 				E1934A122EB2C06100525810 /* DestinationStoreTests.swift in Sources */,
 				E1934A132EB2C06100525810 /* FavoriteDestinationTests.swift in Sources */,
 				E1934A142EB2C06100525810 /* AlarmModelsTests.swift in Sources */,
 				E1934A152EB2C06100525810 /* IPValidatorTests.swift in Sources */,
 				E1934A162EB2C06100525810 /* HubScopedIDTests.swift in Sources */,
+				E13149B92ECC0DA400176FD9 /* SettingsBackupService.swift in Sources */,
 				E1934A172EB2C06100525810 /* PINHasherTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1176,7 +1188,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sunfoxinnovations-llc.homepanel-app;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.sunfoxinnovations-llc.homepanel-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -1211,7 +1223,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.sunfoxinnovations-llc.homepanel-app;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.sunfoxinnovations-llc.homepanel-app";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;

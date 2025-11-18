@@ -54,10 +54,11 @@ class DestinationStore: ObservableObject, DestinationStoreProtocol {
         let encoder = JSONEncoder()
         let data = try encoder.encode(destinations)
 
-        try keychainService.storeData(key: destinationsKey, value: data, syncable: false)
+        // Enable iCloud sync so destinations persist across app deletions
+        try keychainService.storeData(key: destinationsKey, value: data, syncable: true)
 
         self.destinations = destinations
-        DebugLogger.log("✅ [DestinationStore] Destinations saved successfully", feature: .settings)
+        DebugLogger.log("✅ [DestinationStore] Destinations saved successfully to iCloud Keychain", feature: .settings)
     }
 
     // MARK: - Add Destination

@@ -274,6 +274,7 @@ enum SettingsMenuItem: String, CaseIterable {
     case devicesAndScenes = "Devices & Scenes"
     case hubManagement = "Automation Hubs"
     case favoriteDestinations = "Favorite Destinations"
+    case backupRestore = "Backup & Restore"
     case resetLockouts = "Reset Lockouts"
     case clearAllSettings = "Clear All Settings"
 
@@ -284,6 +285,7 @@ enum SettingsMenuItem: String, CaseIterable {
         case .devicesAndScenes: return "lightbulb.fill"
         case .hubManagement: return "network"
         case .favoriteDestinations: return "location.fill"
+        case .backupRestore: return "square.and.arrow.up.on.square.fill"
         case .resetLockouts: return "lock.open"
         case .clearAllSettings: return "exclamationmark.triangle.fill"
         }
@@ -314,6 +316,15 @@ enum SettingsMenuItem: String, CaseIterable {
             HubManagementView(config: config, hubConfigStore: hubConfigStore, hubService: automationViewModel.hubService)
         case .favoriteDestinations:
             DestinationManagementView(destinationStore: destinationStore)
+        case .backupRestore:
+            BackupRestoreView(
+                config: config,
+                pinService: pinService as! PINManagementService,
+                cameraConfigService: cameraConfigService,
+                hubConfigStore: hubConfigStore,
+                destinationStore: destinationStore
+            )
+            .environmentObject(settingsContext)
         case .resetLockouts:
             ResetLockoutsView(pinService: pinService as! PINManagementService)
         case .clearAllSettings:

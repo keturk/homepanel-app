@@ -75,33 +75,43 @@ internal protocol AppConfigurationProtocol: TimingConfiguration, SceneConfigurat
 /// Main application configuration class that manages all configuration aspects.
 /// This class implements the AppConfigurationProtocol and provides centralized configuration management
 /// for timing settings, scene mappings, and PIN management.
+/// All settings are stored in iCloud Keychain to persist across app deletions.
 @MainActor
 internal class AppConfiguration: ObservableObject, AppConfigurationProtocol {
     // PIN Management Service
     internal let pinService: any PINManagementServiceProtocol
     
+    // Keychain service for persistent storage
+    private let keychainService = KeychainService.shared
+    
+    // Keychain keys
+    private enum KeychainKeys {
+        static let hubScopedSceneMap = "app_config_hubScopedSceneMap"
+        static let selectedDeviceNames = "app_config_selectedDeviceNames"
+        static let primaryHubId = "app_config_primaryHubId"
+        static let migrationCompleted = "app_config_migration_completed"
+    }
+    
     @Published internal var hubScopedSceneMap: HubScopedSceneMap = HubScopedSceneMap() {
         didSet {
-            // Store hub-scoped scene map in UserDefaults as JSON
+            // Store hub-scoped scene map in iCloud Keychain as JSON
             // Convert to a format that can be serialized: [hubId: [sceneName: sceneId]]
             var serializableMap: [String: [String: String]] = [:]
             for hubId in hubScopedSceneMap.getAllHubIds() {
                 serializableMap[hubId] = hubScopedSceneMap.getScenes(forHub: hubId)
             }
             
-            if let data = try? JSONSerialization.data(withJSONObject: serializableMap, options: []),
-               let jsonString = String(data: data, encoding: .utf8) {
-                UserDefaults.standard.set(jsonString, forKey: "hubScopedSceneMap")
+            if let data = try? JSONSerialization.data(withJSONObject: serializableMap, options: []) {
+                try? keychainService.storeData(key: KeychainKeys.hubScopedSceneMap, value: data, syncable: true)
             }
         }
     }
     
     @Published internal var selectedDeviceNames: [String] = [] {
         didSet {
-            // Store selected device names in UserDefaults as JSON
-            if let data = try? JSONSerialization.data(withJSONObject: selectedDeviceNames, options: []),
-               let jsonString = String(data: data, encoding: .utf8) {
-                UserDefaults.standard.set(jsonString, forKey: "selectedDeviceNames")
+            // Store selected device names in iCloud Keychain as JSON
+            if let data = try? JSONSerialization.data(withJSONObject: selectedDeviceNames, options: []) {
+                try? keychainService.storeData(key: KeychainKeys.selectedDeviceNames, value: data, syncable: true)
             }
         }
     }
@@ -109,9 +119,13 @@ internal class AppConfiguration: ObservableObject, AppConfigurationProtocol {
     @Published internal var primaryHubId: String? {
         didSet {
             if let hubId = primaryHubId {
-                UserDefaults.standard.set(hubId, forKey: "primaryHubId")
+                // Store primary hub ID in iCloud Keychain
+                if let data = hubId.data(using: .utf8) {
+                    try? keychainService.storeData(key: KeychainKeys.primaryHubId, value: data, syncable: true)
+                }
             } else {
-                UserDefaults.standard.removeObject(forKey: "primaryHubId")
+                // Remove from keychain if nil
+                try? keychainService.delete(key: KeychainKeys.primaryHubId)
             }
         }
     }
@@ -193,18 +207,14 @@ internal class AppConfiguration: ObservableObject, AppConfigurationProtocol {
     internal let alarmDeviceId = AppConfiguration.defaultAlarmDeviceId
     internal let refreshInterval: TimeInterval = AppConfiguration.defaultRefreshInterval
     
-    // UserDefaults keys
-    private enum Keys {
-        static let sceneMap = "sceneMap"
-        static let selectedDeviceNames = "selectedDeviceNames"
-    }
-
     internal init(pinService: any PINManagementServiceProtocol) {
         self.pinService = pinService
         
-        // Load hub-scoped scene map from UserDefaults
-        if let jsonString = UserDefaults.standard.string(forKey: "hubScopedSceneMap"),
-           let data = jsonString.data(using: .utf8),
+        // Migrate from UserDefaults to Keychain if needed (one-time migration)
+        migrateFromUserDefaultsIfNeeded()
+        
+        // Load hub-scoped scene map from iCloud Keychain
+        if let data = try? keychainService.retrieveData(key: KeychainKeys.hubScopedSceneMap),
            let serializableMap = try? JSONSerialization.jsonObject(with: data) as? [String: [String: String]] {
             var loadedSceneMap = HubScopedSceneMap()
             for (hubId, scenes) in serializableMap {
@@ -218,17 +228,60 @@ internal class AppConfiguration: ObservableObject, AppConfigurationProtocol {
             self.hubScopedSceneMap = loadedSceneMap
         }
         
-        // Load selected device names from UserDefaults
-        if let jsonString = UserDefaults.standard.string(forKey: Keys.selectedDeviceNames),
-           let data = jsonString.data(using: .utf8),
+        // Load selected device names from iCloud Keychain
+        if let data = try? keychainService.retrieveData(key: KeychainKeys.selectedDeviceNames),
            let deviceNamesArray = try? JSONSerialization.jsonObject(with: data) as? [String] {
             self.selectedDeviceNames = deviceNamesArray
-        } else {
         }
         
-        // Load primary hub ID from UserDefaults
-        self.primaryHubId = UserDefaults.standard.string(forKey: "primaryHubId")
+        // Load primary hub ID from iCloud Keychain
+        if let data = try? keychainService.retrieveData(key: KeychainKeys.primaryHubId),
+           let hubId = String(data: data, encoding: .utf8) {
+            self.primaryHubId = hubId
+        }
+    }
+    
+    // MARK: - Migration from UserDefaults
+    
+    /// Migrates settings from UserDefaults to iCloud Keychain (one-time migration)
+    private func migrateFromUserDefaultsIfNeeded() {
+        // Check if migration has already been completed
+        do {
+            _ = try keychainService.retrieveData(key: KeychainKeys.migrationCompleted)
+            // Migration already completed, skip
+            return
+        } catch {
+            // Migration not completed, proceed
+        }
         
+        DebugLogger.log("🔄 [AppConfiguration] Starting migration from UserDefaults to iCloud Keychain", feature: .settings)
+        
+        // Migrate hub-scoped scene map
+        if let jsonString = UserDefaults.standard.string(forKey: "hubScopedSceneMap"),
+           let data = jsonString.data(using: .utf8) {
+            try? keychainService.storeData(key: KeychainKeys.hubScopedSceneMap, value: data, syncable: true)
+            DebugLogger.log("✅ [AppConfiguration] Migrated hubScopedSceneMap to Keychain", feature: .settings)
+        }
+        
+        // Migrate selected device names
+        if let jsonString = UserDefaults.standard.string(forKey: "selectedDeviceNames"),
+           let data = jsonString.data(using: .utf8) {
+            try? keychainService.storeData(key: KeychainKeys.selectedDeviceNames, value: data, syncable: true)
+            DebugLogger.log("✅ [AppConfiguration] Migrated selectedDeviceNames to Keychain", feature: .settings)
+        }
+        
+        // Migrate primary hub ID
+        if let hubId = UserDefaults.standard.string(forKey: "primaryHubId"),
+           let data = hubId.data(using: .utf8) {
+            try? keychainService.storeData(key: KeychainKeys.primaryHubId, value: data, syncable: true)
+            DebugLogger.log("✅ [AppConfiguration] Migrated primaryHubId to Keychain", feature: .settings)
+        }
+        
+        // Mark migration as completed
+        if let migrationData = "migrated".data(using: .utf8) {
+            try? keychainService.storeData(key: KeychainKeys.migrationCompleted, value: migrationData, syncable: true)
+            DebugLogger.log("✅ [AppConfiguration] Migration completed", feature: .settings)
+        }
     }
     
     // MARK: - Validation Methods
